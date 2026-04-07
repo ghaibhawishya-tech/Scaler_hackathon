@@ -1,0 +1,14 @@
+# ── Python Junk ─────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+test_results.txt
+
+# ── Environment Secrets ──────────────────────────────────────────────────────
+.env
+
+# ── Distribution ─────────────────────────────────────────────────────────────
+dist/
+build/
+*.egg-info/

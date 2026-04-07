@@ -1,0 +1,44 @@
+env_id: RouterEnv-v1
+version: "2.0.0"
+title: "Advanced LLM Model Router - Stream & Probabilistic Workflow"
+
+# ── API Surface ─────────────────────────────────────────────────────────────
+api:
+  transport: http
+  port: 8000
+  endpoints:
+    reset:  POST /reset
+    step:   POST /step
+    state:  GET  /state
+
+# ── Data Models ─────────────────────────────────────────────────────────────
+models:
+  observation: router_env.models.RouterObservation
+  action:      router_env.models.RouterAction
+  state:       router_env.models.RouterState
+  entrypoint:  router_env.environment:RouterEnvironment
+
+# ── Domain Characteristics (Metadata for Judges) ────────────────────────────
+domain: "Workflow Automation / Orchestration"
+real_world_task: "LLM Model Routing and Budget Optimization"
+agent_capability: "Intellectual Risk Assessment & Cost-Benefit Analysis"
+
+# ── Task Catalogue (Samples) ────────────────────────────────────────────────
+tasks:
+  - id: pii_redact
+    description: "Redact PII (names, phone, etc.) from chat logs."
+  - id: sql_fix
+    description: "Fix logic errors in SQL queries."
+  - id: audit_rest
+    description: "Multi-vulnerability security audit for APIs."
+
+# ── Reward Design ───────────────────────────────────────────────────────────
+reward:
+  description: "Success(2.0*complexity) + EfficiencyBonus - Cost - LatencyPenalty"
+  signal: "Continuous (based on model usage and task difficulty)"
+
+# ── Runtime Constraints ─────────────────────────────────────────────────────
+runtime:
+  docker: true
+  cpu: 2
+  memory_gb: 8
