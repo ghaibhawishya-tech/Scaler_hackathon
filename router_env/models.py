@@ -2,7 +2,7 @@
 RouterEnv-v1 — Advanced LLM Routing Simulation
 ==============================================
 This environment models the real-world challenge of building a persistent
-orchestrator that routes a stream of varying-complexity tasks to the optimal
+orchestrator that routes a stream of varying-complexity tasks to the optimal 
 LLM backend while balancing cost, quality, and latency.
 """
 

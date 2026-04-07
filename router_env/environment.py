@@ -1,7 +1,7 @@
 """
 RouterEnv-v1 — Advanced LLM Routing Simulation (v2.1)
 ======================================================
-This version implements the 'LLM-as-a-Judge' agent grader and features
+This version implements the 'LLM-as-a-Judge' agent grader and features 
 a 15-task dynamic catalogue with strictly hidden complexity scores.
 """
 
@@ -162,7 +162,7 @@ class RouterEnvironment:
         self._sequence_length = sequence_length
         self._state: Optional[RouterState] = None
         self._done = True
-
+        
         api_key = os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN")
         base_url = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
         self._model_name = os.getenv("MODEL_NAME", "meta-llama/Meta-Llama-3-8B-Instruct")
@@ -171,7 +171,7 @@ class RouterEnvironment:
     def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[RouterObservation, Dict[str, Any]]:
         self._seed = seed if seed is not None else random.randint(0, 1000000)
         random.seed(self._seed)
-
+        
         all_ids = list(TASK_CATALOGUE.keys())
         task_queue = random.choices(all_ids, k=self._sequence_length)
 
@@ -212,7 +212,7 @@ class RouterEnvironment:
 
         # Reward = PerformanceScore * Scale - CostWeight
         reward = (score * 2.5) - (cost * 0.4)
-
+        
         # Hidden Overkill Penalty (Hardcoded in environment logic only)
         if model.name == "large-reasoning" and task.complexity < 0.4:
             reward -= 1.0 # Significant penalty for wasting the heavy model
@@ -222,14 +222,14 @@ class RouterEnvironment:
         if self._state.total_cost >= self._state.episode_budget:
             terminated = True
         self._done = terminated
-
+        
         obs = self._get_current_obs(f"Grader Verdict: {reasoning}")
         info = {"score": score, "reasoning": reasoning, "task_id": task_id}
         return obs, round(reward, 4), terminated, False, info
 
     def _evaluate_with_agent(self, description: str, model: ModelSpec) -> Tuple[float, str]:
         user_prompt = f"TASK: {description}\nMODEL: {model.name}\nPOWER: {model.power}\nScore this choice."
-
+        
         response = self._client.chat.completions.create(
             model=self._model_name,
             messages=[
@@ -248,7 +248,7 @@ class RouterEnvironment:
         idx = self._state.current_task_index
         if self._state is None or idx >= len(self._state.task_queue):
             return RouterObservation(
-                task_description="EMPTY", estimated_tokens=0, budget_remaining=0.0,
+                task_description="EMPTY", estimated_tokens=0, budget_remaining=0.0, 
                 tasks_left=0, last_performance_score=0.0, message="Complete."
             )
         task_id = self._state.task_queue[idx]
