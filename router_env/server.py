@@ -56,7 +56,7 @@ async def dashboard():
         </style>
     </head>
     <body class="min-h-screen py-12 px-4 md:px-12 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/20 via-slate-900 to-slate-900">
-
+        
         <!-- Header -->
         <div class="max-w-6xl mx-auto mb-12 text-center md:text-left flex flex-col md:flex-row justify-between items-end gap-6">
             <div>
@@ -73,10 +73,10 @@ async def dashboard():
         </div>
 
         <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-
+            
             <!-- System Status -->
             <div class="md:col-span-2 space-y-8">
-
+                
                 <!-- Metrics Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div class="glass p-6 rounded-3xl">
@@ -160,25 +160,39 @@ async def dashboard():
                     </div>
                 </div>
 
-
+                <div class="accent-gradient p-8 rounded-[2.5rem] glow-purple text-white relative overflow-hidden group">
+                    <div class="absolute -right-4 -bottom-4 opacity-10 rotate-12 group-hover:scale-110 transition-transform">
+                        <svg class="w-48 h-48" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path></svg>
+                    </div>
+                    <h4 class="text-xl font-bold mb-4">Hackathon Status</h4>
+                    <p class="text-white/80 text-sm mb-6">Targeting 90+ Score with Meta-Llama-3-8B backend.</p>
+                    <div class="flex items-center gap-3">
+                        <div class="flex-1 h-3 bg-white/20 rounded-full overflow-hidden">
+                            <div class="w-[85%] h-full bg-white shadow-[0_0_10px_white]"></div>
+                        </div>
+                        <span class="text-xs font-bold whitespace-nowrap">85% READY</span>
+                    </div>
+                </div>
 
                 <div class="glass p-8 rounded-[2.5rem] flex flex-col items-center text-center">
                     <div class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center mb-4">
                          <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
                     </div>
                     <h4 class="text-lg font-bold">Open Source</h4>
-                    <p class="text-slate-400 text-xs mt-2 italic">Production-ready LLM routing infrastructure. Built with FastAPI, Pydantic & OpenAI.</p>
+                    <p class="text-slate-400 text-xs mt-2 italic">Designed for Scaler Hackathon 2026. Built with FastAPI, Pydantic & OpenAI.</p>
                 </div>
             </div>
         </div>
 
         <footer class="max-w-6xl mx-auto mt-20 pt-8 border-t border-white/5 text-center text-slate-500 text-xs uppercase tracking-widest">
-            &copy; 2026 RouterEnv-v1 • Intelligent Orchestration Systems
+            &copy; 2026 RouterEnv-v1 Team • Sprinting Snails Collaboration
         </footer>
     </body>
     </html>
     """
 
+
+# ── Request / Response schemas ───────────────────────────────────────────────
 
 class ResetRequest(BaseModel):
     """Body for ``POST /reset``."""
