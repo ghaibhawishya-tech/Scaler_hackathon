@@ -160,19 +160,7 @@ async def dashboard():
                     </div>
                 </div>
 
-                <div class="accent-gradient p-8 rounded-[2.5rem] glow-purple text-white relative overflow-hidden group">
-                    <div class="absolute -right-4 -bottom-4 opacity-10 rotate-12 group-hover:scale-110 transition-transform">
-                        <svg class="w-48 h-48" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path></svg>
-                    </div>
-                    <h4 class="text-xl font-bold mb-4">Hackathon Status</h4>
-                    <p class="text-white/80 text-sm mb-6">Targeting 90+ Score with Meta-Llama-3-8B backend.</p>
-                    <div class="flex items-center gap-3">
-                        <div class="flex-1 h-3 bg-white/20 rounded-full overflow-hidden">
-                            <div class="w-[85%] h-full bg-white shadow-[0_0_10px_white]"></div>
-                        </div>
-                        <span class="text-xs font-bold whitespace-nowrap">85% READY</span>
-                    </div>
-                </div>
+
 
                 <div class="glass p-8 rounded-[2.5rem] flex flex-col items-center text-center">
                     <div class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center mb-4">
