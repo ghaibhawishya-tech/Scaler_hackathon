@@ -13,7 +13,7 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # ✅ HF Spaces: run as user 1000 (required for openenv tag)
 RUN useradd -m -u 1000 user
-ENV PATH="/home/user/.local/bin:/root/.cargo/bin:${PATH}"
+ENV PATH="/root/.local/bin:/home/user/.local/bin:${PATH}"
 
 # ✅ Set working directory
 WORKDIR /app
