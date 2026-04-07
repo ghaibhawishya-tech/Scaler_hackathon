@@ -42,7 +42,7 @@ The agent selects one of **3 discrete actions** per step — choosing which mode
 | `1` | `medium-balanced` | 0.7 | $0.080 | 0.4s | Code refactoring, rewriting, summarization |
 | `2` | `large-reasoning` | 1.0 | $0.800 | 1.5s | Security audits, legal translation, complex logic |
 
-**Action type**: `Discrete(3)`  
+**Action type**: `Discrete(3)`
 **Action format**: Integer `{0, 1, 2}`
 
 ---
@@ -60,7 +60,7 @@ The agent receives a dictionary observation at each step. **Critically, raw comp
 | `last_success` | `bool` | `True / False` | Whether the previous task succeeded |
 | `last_reward` | `float` | `(-∞, +∞)` | Reward received on the previous step |
 
-**Observation type**: `Dict`  
+**Observation type**: `Dict`
 **Zero-leakage guarantee**: Complexity scores and ground-truth difficulty labels are withheld from the agent at inference time.
 
 ---
@@ -237,16 +237,15 @@ git push
 
 ---
 
-## 🗂️ Project Structure
+## 🗂 Project Structure
 
 ```
 .
 ├── router_env/          # Core environment package
 │   ├── __init__.py
-│   ├── env.py           # RouterEnv class (reset, step, state)
+│   ├── environment.py   # RouterEnv class (reset, step, state)
 │   ├── models.py        # Model tier definitions & cost table
-│   └── tasks.py         # Task catalogue & sampling logic
-├── tests/               # Test suite
+│   └── server.py        # FastAPI server for remote evaluation
 ├── inference.py         # Baseline agent (LLaMA-3-8B)
 ├── openenv.yaml         # OpenEnv v2.0 spec declaration
 ├── pyproject.toml       # Package metadata

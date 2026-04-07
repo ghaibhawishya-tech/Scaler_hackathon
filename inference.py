@@ -32,7 +32,7 @@ client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
 # ── Prompting ────────────────────────────────────────────────────────────────
 
 SYSTEM_PROMPT = """
-You are a high-performance AI Model Router. 
+You are a high-performance AI Model Router.
 Decide which LLM tier to route the current task to based on its description.
 
 CORE TIERS:
@@ -49,13 +49,13 @@ Response ONLY with JSON:
 def get_routing_decision(observation: Any) -> Dict[str, Any]:
     """Query the LLM to make a routing decision."""
     obs_data = observation.model_dump()
-    
+
     user_prompt = (
         f"TASK_DESCRIPTION: {obs_data.get('task_description')}\n"
         f"BUDGET_REMAINING: ${obs_data.get('budget_remaining', 0.0):.2f}\n"
         f"LAST_SCORE_GIVEN_BY_JUDGE: {obs_data.get('last_performance_score', 0.0)}"
     )
-    
+
     for attempt in range(2):
         try:
             response = client.chat.completions.create(
@@ -68,7 +68,7 @@ def get_routing_decision(observation: Any) -> Dict[str, Any]:
                 timeout=30.0
             )
             result = json.loads(response.choices[0].message.content)
-            
+
             if "selected_model" in result and result["selected_model"] in ["small-fast", "medium-balanced", "large-reasoning"]:
                 return result
         except Exception as e:
@@ -76,33 +76,33 @@ def get_routing_decision(observation: Any) -> Dict[str, Any]:
                 time.sleep(2)
                 continue
             raise RuntimeError(f"LLM_Inference_Failed: {str(e)}")
-    
+
     raise RuntimeError("LLM_Validation_Failed: No valid choice returned from model")
 
 
 def run_agent():
     env = RouterEnvironment(budget=10.0, sequence_length=5)
     obs, info = env.reset()
-    
+
     print(f"[START] task=router-graders env=RouterEnv-v1 v=2.1 agent=MetaLlama3-8B")
-    
+
     cumulative_reward = 0.0
     steps = 0
     rewards_list = []
-    
+
     while True:
         steps += 1
-        
+
         # 1. Decision
         decision = get_routing_decision(obs)
         action = RouterAction(selected_model=decision["selected_model"])
-        
+
         # 2. Step with Judge
         obs, reward, terminated, truncated, info = env.step(action)
-        
+
         cumulative_reward += reward
         rewards_list.append(reward)
-        
+
         # [STEP] output
         done_bool = "true" if terminated else "false"
         print(f"[STEP] step={steps} model={action.selected_model} task={info['task_id']} score={info['score']:.1f} reward={reward:.3f} done={done_bool}")
@@ -110,11 +110,12 @@ def run_agent():
 
         if terminated:
             break
-            
+
     # [END] output
     score_avg = cumulative_reward / steps if steps > 0 else 0.0
     rewards_str = ",".join([f"{r:.2f}" for r in rewards_list])
     print(f"[END] avg_score={score_avg:.3f} total_reward={cumulative_reward:.3f} steps={steps} rewards={rewards_str}")
+
 
 if __name__ == "__main__":
     run_agent()

@@ -56,7 +56,7 @@ async def dashboard():
         </style>
     </head>
     <body class="min-h-screen py-12 px-4 md:px-12 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/20 via-slate-900 to-slate-900">
-        
+
         <!-- Header -->
         <div class="max-w-6xl mx-auto mb-12 text-center md:text-left flex flex-col md:flex-row justify-between items-end gap-6">
             <div>
@@ -73,10 +73,10 @@ async def dashboard():
         </div>
 
         <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-            
+
             <!-- System Status -->
             <div class="md:col-span-2 space-y-8">
-                
+
                 <!-- Metrics Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div class="glass p-6 rounded-3xl">
@@ -179,8 +179,6 @@ async def dashboard():
     </html>
     """
 
-
-# ── Request / Response schemas ───────────────────────────────────────────────
 
 class ResetRequest(BaseModel):
     """Body for ``POST /reset``."""
