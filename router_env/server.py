@@ -167,13 +167,13 @@ async def dashboard():
                          <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
                     </div>
                     <h4 class="text-lg font-bold">Open Source</h4>
-                    <p class="text-slate-400 text-xs mt-2 italic">Designed for Scaler Hackathon 2026. Built with FastAPI, Pydantic & OpenAI.</p>
+                    <p class="text-slate-400 text-xs mt-2 italic">Production-ready LLM routing infrastructure. Built with FastAPI, Pydantic & OpenAI.</p>
                 </div>
             </div>
         </div>
 
         <footer class="max-w-6xl mx-auto mt-20 pt-8 border-t border-white/5 text-center text-slate-500 text-xs uppercase tracking-widest">
-            &copy; 2026 RouterEnv-v1 Team • Sprinting Snails Collaboration
+            &copy; 2026 RouterEnv-v1 • Intelligent Orchestration Systems
         </footer>
     </body>
     </html>

@@ -10,7 +10,6 @@ tags:
   - reinforcement-learning
   - llm-routing
   - agentic-ai
-  - hackathon
 ---
 
 # 🚀 RouterEnv-v1: Intelligent LLM Orchestration Environment
@@ -261,4 +260,4 @@ git push
 
 ## 📄 License
 
-Developed for the **OpenEnv Hackathon: Intelligent Agentic Environments**.
+Developed as part of the **OpenEnv Initiative: Intelligent Agentic Environments**.
