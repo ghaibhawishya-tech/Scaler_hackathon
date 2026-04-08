@@ -12,10 +12,9 @@ ENV PATH="/root/.local/bin:/home/user/.local/bin:${PATH}"
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY --chown=user:user . .
 RUN uv pip install --system --no-cache -r requirements.txt
 
-COPY --chown=user:user . .
 USER user
 
 EXPOSE 7860
