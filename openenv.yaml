@@ -5,7 +5,7 @@ title: "Advanced LLM Model Router - Stream & Probabilistic Workflow"
 # ── API Surface ─────────────────────────────────────────────────────────────
 api:
   transport: http
-  port: 8000
+  port: 7860
   endpoints:
     reset:  POST /reset
     step:   POST /step

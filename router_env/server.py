@@ -185,6 +185,7 @@ async def dashboard():
 class ResetRequest(BaseModel):
     """Body for ``POST /reset``."""
     seed: Optional[int] = Field(default=None)
+    options: Optional[Dict[str, Any]] = Field(default=None)
 
 
 class StepResponse(BaseModel):
@@ -195,16 +196,24 @@ class StepResponse(BaseModel):
     info: Dict[str, Any]
 
 
+class ResetResponse(BaseModel):
+    """Body returned by ``POST /reset``."""
+    observation: RouterObservation
+    info: Dict[str, Any]
+
+
 # ── Routes ───────────────────────────────────────────────────────────────────
 
-@app.post("/reset", response_model=RouterObservation)
-def reset(body: ResetRequest) -> RouterObservation:
+@app.post("/reset", response_model=ResetResponse)
+def reset(body: Optional[ResetRequest] = None) -> ResetResponse:
     """Reset the environment and start a new workflow sequence."""
+    seed = body.seed if body else None
+    options = body.options if body else None
     try:
-        obs, info = env.reset(seed=body.seed)
+        obs, info = env.reset(seed=seed, options=options)
     except Exception as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    return obs
+    return ResetResponse(observation=obs, info=info)
 
 
 @app.post("/step", response_model=StepResponse)

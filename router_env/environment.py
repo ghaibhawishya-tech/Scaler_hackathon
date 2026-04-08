@@ -202,8 +202,17 @@ class RouterEnvironment:
         except Exception as e:
             score, reasoning = 0.0, f"Judge error: {str(e)}"
 
+        # 🎲 Stochastic Outcome: 15% chance of failure even on high scores
+        # This models real-world API flakiness and edge cases.
+        stochastic_failure = random.random() < 0.15
+        if score > 0.8 and stochastic_failure:
+            score = 0.1
+            reasoning = f"(Stochastic Failure) {reasoning}"
+
         success = score >= 0.7
         self._last_perf = score
+        self._last_success = success
+        
         if success: self._state.successes += 1
         else: self._state.failures += 1
 
@@ -249,7 +258,8 @@ class RouterEnvironment:
         if self._state is None or idx >= len(self._state.task_queue):
             return RouterObservation(
                 task_description="EMPTY", estimated_tokens=0, budget_remaining=0.0, 
-                tasks_left=0, last_performance_score=0.0, message="Complete."
+                tasks_left=0, last_performance_score=0.0, last_success=False,
+                task_id="None", message="Complete."
             )
         task_id = self._state.task_queue[idx]
         task = TASK_CATALOGUE[task_id]
@@ -259,6 +269,8 @@ class RouterEnvironment:
             budget_remaining=max(0.0, self._state.episode_budget - self._state.total_cost),
             tasks_left=len(self._state.task_queue) - idx,
             last_performance_score=self._last_perf,
+            last_success=getattr(self, "_last_success", False),
+            task_id=task_id,
             message=message
         )
 
