@@ -169,15 +169,8 @@ class RouterEnvironment:
         
         print(f"[DEBUG] Initializing OpenAI client to {base_url}")
         try:
-            self._client = OpenAI(api_key=api_key, base_url=base_url, timeout=15.0)
+            self._client = OpenAI(api_key=api_key, base_url=base_url, timeout=10.0)
             print("[DEBUG] OpenAI client initialized successfully")
-        except TimeoutError as e:
-            print(f"[ERROR] {e}")
-            print(f"[ERROR] Please verify:")
-            print(f"  1. Your internet connection is active")
-            print(f"  2. The API endpoint is reachable: {base_url}")
-            print(f"  3. Your firewall/proxy is not blocking the connection")
-            raise
         except Exception as e:
             print(f"[ERROR] Failed to initialize OpenAI client: {e}")
             raise
