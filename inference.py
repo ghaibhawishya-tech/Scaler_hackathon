@@ -184,6 +184,7 @@ def run_agent():
 if __name__ == "__main__":
     try:
         run_agent()
+        exit(0)
     except Exception as e:
         print(f"[FATAL] Unhandled exception in run_agent: {e}")
-        raise 
+        exit(1)

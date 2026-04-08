@@ -13,7 +13,6 @@ ENV PATH="/root/.local/bin:/home/user/.local/bin:${PATH}"
 WORKDIR /app
 
 COPY requirements.txt .
-# ✅ FIX: added --no-cache to ensure fresh install every time
 RUN uv pip install --system --no-cache -r requirements.txt
 
 COPY --chown=user:user . .

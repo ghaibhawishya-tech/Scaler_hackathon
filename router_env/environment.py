@@ -168,21 +168,8 @@ class RouterEnvironment:
         self._model_name = os.getenv("MODEL_NAME", "meta-llama/Meta-Llama-3-8B-Instruct")
         
         print(f"[DEBUG] Initializing OpenAI client to {base_url}")
-        import signal
-        def timeout_handler(signum, frame):
-            raise TimeoutError(f"OpenAI client initialization timed out after 15 seconds. Check network connectivity to {base_url}")
-        
         try:
-            # Set a 15-second timeout for SSL/network initialization
-            if hasattr(signal, 'SIGALRM'):
-                original_handler = signal.signal(signal.SIGALRM, timeout_handler)
-                signal.alarm(15)
-            
             self._client = OpenAI(api_key=api_key, base_url=base_url, timeout=15.0)
-            
-            if hasattr(signal, 'SIGALRM'):
-                signal.alarm(0)
-                signal.signal(signal.SIGALRM, original_handler)
             print("[DEBUG] OpenAI client initialized successfully")
         except TimeoutError as e:
             print(f"[ERROR] {e}")
