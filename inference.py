@@ -72,11 +72,11 @@ def wait_for_env(host: str, port: int, timeout: int = 60) -> bool:
     while time.time() < deadline:
         try:
             with socket.create_connection((host, port), timeout=2):
-                print(f"[WAIT] RouterEnv is reachable at {host}:{port} ✅")
+                print(f"[WAIT] RouterEnv is reachable at {host}:{port} [OK]")
                 return True
         except (OSError, ConnectionRefusedError):
             time.sleep(2)
-    print(f"[ERROR] RouterEnv not reachable after {timeout}s ❌")
+    print(f"[ERROR] RouterEnv not reachable after {timeout}s [FAIL]")
     return False
 
 
