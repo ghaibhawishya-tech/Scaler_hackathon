@@ -166,7 +166,34 @@ class RouterEnvironment:
         api_key = os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN")
         base_url = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
         self._model_name = os.getenv("MODEL_NAME", "meta-llama/Meta-Llama-3-8B-Instruct")
-        self._client = OpenAI(api_key=api_key, base_url=base_url)
+        
+        print(f"[DEBUG] Initializing OpenAI client to {base_url}")
+        import signal
+        def timeout_handler(signum, frame):
+            raise TimeoutError(f"OpenAI client initialization timed out after 15 seconds. Check network connectivity to {base_url}")
+        
+        try:
+            # Set a 15-second timeout for SSL/network initialization
+            if hasattr(signal, 'SIGALRM'):
+                original_handler = signal.signal(signal.SIGALRM, timeout_handler)
+                signal.alarm(15)
+            
+            self._client = OpenAI(api_key=api_key, base_url=base_url, timeout=15.0)
+            
+            if hasattr(signal, 'SIGALRM'):
+                signal.alarm(0)
+                signal.signal(signal.SIGALRM, original_handler)
+            print("[DEBUG] OpenAI client initialized successfully")
+        except TimeoutError as e:
+            print(f"[ERROR] {e}")
+            print(f"[ERROR] Please verify:")
+            print(f"  1. Your internet connection is active")
+            print(f"  2. The API endpoint is reachable: {base_url}")
+            print(f"  3. Your firewall/proxy is not blocking the connection")
+            raise
+        except Exception as e:
+            print(f"[ERROR] Failed to initialize OpenAI client: {e}")
+            raise
 
     def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[RouterObservation, Dict[str, Any]]:
         self._seed = seed if seed is not None else random.randint(0, 1000000)
