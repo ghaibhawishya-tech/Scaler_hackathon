@@ -32,11 +32,11 @@ JUDGE_SYSTEM_PROMPT = """
 You are a 'RouterEnv' Judge. Evaluate if the selected model can solve the task.
 You must return only JSON.
 
-SCORING RUBRIC (0.0 to 1.0):
-1.0: Perfect choice. Frontier capability for hard tasks, or efficient for easy tasks.
-0.7: Capable but risky. The model might succeed but is under-powered for full reliability.
-0.4: Weak choice. The model is likely to fail complex reasoning.
-0.1: Complete mismatch (e.g., using a tiny model for a complex security audit).
+SCORING RUBRIC (0.01 to 0.99) - STRICTLY EXCLUDE 0.0 and 1.0:
+0.99: Perfect choice. Frontier capability for hard tasks, or efficient for easy tasks.
+0.75: Capable but risky. The model might succeed but is under-powered for full reliability.
+0.45: Weak choice. The model is likely to fail complex reasoning.
+0.01: Complete mismatch (e.g., using a tiny model for a complex security audit).
 
 JSON SCHEMA:
 {"performance_score": float, "reasoning": "string"}
@@ -214,14 +214,16 @@ class RouterEnvironment:
         try:
             score, reasoning = self._evaluate_with_agent(task.description, model)
         except Exception as e:
-            score, reasoning = 0.0, f"Judge error: {str(e)}"
+            score, reasoning = 0.01, f"Judge error: {str(e)}"
 
         # 🎲 Stochastic Outcome: 15% chance of failure even on high scores
-        # This models real-world API flakiness and edge cases.
         stochastic_failure = random.random() < 0.15
         if score > 0.8 and stochastic_failure:
-            score = 0.1
+            score = 0.05
             reasoning = f"(Stochastic Failure) {reasoning}"
+
+        # 📏 Clamp score to (0.0, 1.0) strictly range [0.01, 0.99]
+        score = max(0.01, min(0.99, score))
 
         success = score >= 0.7
         self._last_perf = score
@@ -263,11 +265,11 @@ class RouterEnvironment:
             
             # Simulated outcome: High chance of success if power >= complexity
             if model.power >= task_comp:
-                return 1.0, f"Heuristic: {model.name} power ({model.power}) satisfies complexity ({task_comp})."
+                return 0.99, f"Heuristic: {model.name} power ({model.power}) satisfies complexity ({task_comp})."
             elif model.power >= task_comp - 0.2:
-                return 0.7, f"Heuristic: {model.name} power ({model.power}) is close to complexity ({task_comp})."
+                return 0.75, f"Heuristic: {model.name} power ({model.power}) is close to complexity ({task_comp})."
             else:
-                return 0.1, f"Heuristic: {model.name} power ({model.power}) is too weak for complexity ({task_comp})."
+                return 0.01, f"Heuristic: {model.name} power ({model.power}) is too weak for complexity ({task_comp})."
 
         user_prompt = f"TASK: {description}\nMODEL: {model.name}\nPOWER: {model.power}\nScore this choice."
         

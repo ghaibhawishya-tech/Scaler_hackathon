@@ -1,5 +1,5 @@
 env_id: RouterEnv-v1
-version: "2.0.0"
+version: "2.1.0"
 title: "Advanced LLM Model Router - Stream & Probabilistic Workflow"
 
 # ── API Surface ─────────────────────────────────────────────────────────────
@@ -23,19 +23,43 @@ domain: "Workflow Automation / Orchestration"
 real_world_task: "LLM Model Routing and Budget Optimization"
 agent_capability: "Intellectual Risk Assessment & Cost-Benefit Analysis"
 
-# ── Task Catalogue (Samples) ────────────────────────────────────────────────
+# ── Task Catalogue (Full 15-Task Stream) ────────────────────────────────────
 tasks:
-  - id: pii_redact
-    description: "Redact PII (names, phone, etc.) from chat logs."
-  - id: sql_fix
-    description: "Fix logic errors in SQL queries."
-  - id: audit_rest
-    description: "Multi-vulnerability security audit for APIs."
+  - id: sentiment
+    description: "Multi-review sentiment classification."
+  - id: spam_filter
+    description: "Proactive spam and phishing detection."
+  - id: regex_extract
+    description: "Log analysis and date extraction."
+  - id: markdown_gen
+    description: "JSON-to-Markdown documentation workflow."
+  - id: data_clean
+    description: "User data normalization and cleaning."
+  - id: refactor_mono
+    description: "Complex code modularization and refactoring."
+  - id: sql_logic
+    description: "Logical auditing for SQL queries."
+  - id: unit_test_gen
+    description: "Comprehensive software test generation."
+  - id: tech_summary
+    description: "Technical document distillation for business users."
+  - id: support_reply
+    description: "Empathetic customer service orchestration."
+  - id: security_audit
+    description: "Advanced OWASP API security auditing."
+  - id: legal_contract
+    description: "Legal-grade EN-ZH translation workflow."
+  - id: arch_review
+    description: "Infrastructure risk and SPOF assessment."
+  - id: api_design
+    description: "Fintech system design and contract drafting."
+  - id: pii_obfuscate
+    description: "Medical-grade data privacy redaction."
 
 # ── Reward Design ───────────────────────────────────────────────────────────
 reward:
-  description: "Success(2.0*complexity) + EfficiencyBonus - Cost - LatencyPenalty"
-  signal: "Continuous (based on model usage and task difficulty)"
+  description: "PerformanceScore[0.01-0.99] - Cost - OverkillPenalty"
+  signal: "Continuous (Strict range 0 < reward < 1 logic applied to component scores)"
 
 # ── Runtime Constraints ─────────────────────────────────────────────────────
 runtime:
