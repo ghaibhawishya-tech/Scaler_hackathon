@@ -1,6 +1,6 @@
 env_id: RouterEnv-v1
-version: "2.1.0"
-title: "Advanced LLM Model Router - Stream & Probabilistic Workflow"
+version: "2.3.0"
+title: "Advanced LLM Model Router - High-Fidelity RL"
 
 # ── API Surface ─────────────────────────────────────────────────────────────
 api:
@@ -18,12 +18,12 @@ models:
   state:       router_env.models.RouterState
   entrypoint:  router_env.environment:RouterEnvironment
 
-# ── Domain Characteristics (Metadata for Judges) ────────────────────────────
-domain: "Workflow Automation / Orchestration"
-real_world_task: "LLM Model Routing and Budget Optimization"
-agent_capability: "Intellectual Risk Assessment & Cost-Benefit Analysis"
+# ── Domain Characteristics ──────────────────────────────────────────────────
+domain: "Workflow Automation"
+real_world_task: "LLM Model Routing"
+agent_capability: "Cost-Benefit Reasoning"
 
-# ── Task Catalogue (Full 15-Task Stream) ────────────────────────────────────
+# ── Task Catalogue (15 Evaluated Tasks) ─────────────────────────────────────
 tasks:
   - id: sentiment
     description: "Multi-review sentiment classification."
@@ -58,8 +58,8 @@ tasks:
 
 # ── Reward Design ───────────────────────────────────────────────────────────
 reward:
-  description: "PerformanceScore[0.01-0.99] - Cost - OverkillPenalty"
-  signal: "Continuous (Strict range 0 < reward < 1 logic applied to component scores)"
+  description: "Accuracy-Cost hybrid strictly in (0.1, 0.9)"
+  signal: "Continuous (Strict compliance range)"
 
 # ── Runtime Constraints ─────────────────────────────────────────────────────
 runtime:

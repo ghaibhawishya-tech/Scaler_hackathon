@@ -161,8 +161,7 @@ def run_agent() -> int:
 
     score_avg   = cumulative_reward / steps if steps > 0 else 0.0
     rewards_str = ",".join([f"{r:.2f}" for r in rewards_list])
-    print(f"[END] avg_score={score_avg:.3f} total_reward={cumulative_reward:.3f} "
-          f"steps={steps} rewards={rewards_str}")
+    print(f"[END] avg_score={score_avg:.3f} steps={steps} rewards={rewards_str}")
 
     return 0
 
