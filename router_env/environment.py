@@ -32,10 +32,10 @@ JUDGE_SYSTEM_PROMPT = """
 You are a 'RouterEnv' Judge. Evaluate if the selected model can solve the task.
 You must return only JSON.
 
-SCORING RUBRIC (0.1 to 0.9) - MUST BE STATED FRACTION:
-0.9: Perfect choice. Frontier capability for hard tasks, or efficient for easy tasks.
-0.6: Capable but risky or overkill.
-0.1: Complete mismatch or total failure.
+SCORING RUBRIC (0.01 to 0.99) - STRICTLY EXCLUDE 0.0 AND 1.0:
+0.99: Perfect choice. Frontier capability for hard tasks, or efficient for easy tasks.
+0.65: Capable but risky or overkill.
+0.01: Complete mismatch or total failure.
 
 JSON SCHEMA:
 {"performance_score": float, "reasoning": "string"}
@@ -111,23 +111,23 @@ class RouterEnvironment:
 
         # 1. Evaluate
         if self._mock_mode:
-            if model.power >= task.complexity: score = 0.9
-            elif model.power >= task.complexity - 0.2: score = 0.6
-            else: score = 0.1
+            if model.power >= task.complexity: score = 0.99
+            elif model.power >= task.complexity - 0.2: score = 0.65
+            else: score = 0.01
             reasoning = f"Heuristic Score for {task_id}"
         else:
             try:
                 score, reasoning = self._evaluate_with_agent(task.description, model)
             except:
-                score, reasoning = 0.1, "Grader failed"
+                score, reasoning = 0.01, "Grader failed"
 
-        # 2. Strict (0.1, 0.9) Constraint Enforcement
-        score = max(0.1, min(0.9, score))
+        # 2. Strict (0.01, 0.99) Constraint Enforcement
+        score = max(0.01, min(0.99, score))
         
-        # 3. Normalized Reward Calculation (0.1, 0.9)
+        # 3. Normalized Reward Calculation (0.01, 0.99)
         cost_efficiency = 1.0 - (model.cost / 0.81)
         reward = (0.7 * score) + (0.3 * cost_efficiency)
-        reward = max(0.1, min(0.9, reward)) 
+        reward = max(0.01, min(0.99, reward)) 
 
         self._state.current_task_index += 1
         terminated = (self._state.current_task_index >= len(self._state.task_queue))
@@ -151,7 +151,7 @@ class RouterEnvironment:
             temperature=0.0
         )
         data = json.loads(response.choices[0].message.content)
-        return float(data.get("performance_score", 0.1)), str(data.get("reasoning", ""))
+        return float(data.get("performance_score", 0.01)), str(data.get("reasoning", ""))
 
     def _get_current_obs(self, message: str = "") -> RouterObservation:
         idx = self._state.current_task_index
