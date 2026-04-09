@@ -235,12 +235,13 @@ class RouterEnvironment:
         cost = model.cost
         self._state.total_cost += cost
 
-        # Reward = PerformanceScore * Scale - CostWeight
-        reward = (score * 2.5) - (cost * 0.4)
+        # ⚖️ Normalized Reward (Must be strictly between 0 and 1 for the validator)
+        # We use 70% accuracy and 30% cost efficiency.
+        cost_efficiency = max(0.01, 1.0 - (cost / 0.81)) # 0.8 is max cost
+        reward = (0.7 * score) + (0.3 * cost_efficiency)
         
-        # Hidden Overkill Penalty (Hardcoded in environment logic only)
-        if model.name == "large-reasoning" and task.complexity < 0.4:
-            reward -= 1.0 # Significant penalty for wasting the heavy model
+        # 📏 Clamp reward to (0.01, 0.99)
+        reward = max(0.01, min(0.99, reward))
 
         self._state.current_task_index += 1
         terminated = (self._state.current_task_index >= len(self._state.task_queue))
@@ -249,7 +250,12 @@ class RouterEnvironment:
         self._done = terminated
         
         obs = self._get_current_obs(f"Grader Verdict: {reasoning}")
-        info = {"score": score, "reasoning": reasoning, "task_id": task_id}
+        info = {
+            "performance_score": score, # Standard naming
+            "score": score,             # Fallback
+            "reasoning": reasoning, 
+            "task_id": task_id
+        }
         return obs, round(reward, 4), terminated, False, info
 
     def _evaluate_with_agent(self, description: str, model: ModelSpec) -> Tuple[float, str]:
