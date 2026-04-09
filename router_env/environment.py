@@ -135,8 +135,9 @@ class RouterEnvironment:
         
         obs = self._get_current_obs(f"Grader Verdict: {reasoning}")
         info = {
-            "performance_score": round(score, 2),
-            "task_score": round(score, 2),
+            "score": round(score, 2),             # Standard requirement
+            "performance_score": round(score, 2), # Metadata
+            "task_score": round(score, 2),        # Metadata
             "reasoning": reasoning,
             "task_id": task_id
         }

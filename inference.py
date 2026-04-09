@@ -148,7 +148,7 @@ def run_agent() -> int:
 
             done_bool = "true" if terminated else "false"
             print(f"[STEP] step={steps} model={action.selected_model} "
-                  f"task={info.get('task_id','N/A')} score={info.get('performance_score',0.0):.2f} "
+                  f"task={info.get('task_id','N/A')} score={info.get('score',0.0):.2f} "
                   f"reward={reward:.3f} done={done_bool}")
             print(f"       Reasoning: {info.get('reasoning','N/A')}")
 
