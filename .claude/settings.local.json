@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(git push:*)",
+      "Bash(docker build:*)",
+      "Bash(gh auth:*)",
+      "Bash(python -m py_compile C:/Users/trish/Sprinting_snails/inference.py)",
+      "Bash(python -m py_compile C:/Users/trish/Sprinting_snails/router_env/environment.py)",
+      "Bash(python -m py_compile C:/Users/trish/Sprinting_snails/router_env/models.py)",
+      "Bash(python -m py_compile C:/Users/trish/Sprinting_snails/router_env/server.py)",
+      "Bash(python -m py_compile C:/Users/trish/Sprinting_snails/server/app.py)",
+      "Bash(pip install:*)",
+      "Bash(curl -s \"https://huggingface.co/api/spaces/Trish-codez/Sprinting_Snails\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('Status:', d.get\\('runtime',{}\\).get\\('stage','N/A'\\)\\); print\\('Error:', d.get\\('runtime',{}\\).get\\('errorMessage','N/A'\\)\\)\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('Status:', d.get\\('runtime',{}\\).get\\('stage','N/A'\\)\\); print\\('Error:', d.get\\('runtime',{}\\).get\\('errorMessage','N/A'\\)\\)\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('runtime',{}\\), indent=2\\)\\)\")",
+      "Bash(python inference.py)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); r=d.get\\('runtime',{}\\); print\\('Status:', r.get\\('stage','N/A'\\)\\); print\\('SHA:', d.get\\('sha','N/A'\\)\\); print\\('Error:', r.get\\('errorMessage','N/A'\\)[:200] if r.get\\('errorMessage'\\) else 'None'\\)\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); r=d.get\\('runtime',{}\\); print\\('Stage:', r.get\\('stage','N/A'\\)\\); print\\('SHA:', d.get\\('sha','N/A'\\)\\); err=r.get\\('errorMessage'\\); print\\('Error:', err[:300] if err else 'None'\\)\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('HF SHA:', d.get\\('sha','N/A'\\)\\); print\\('Stage:', d.get\\('runtime',{}\\).get\\('stage','N/A'\\)\\)\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); r=d.get\\('runtime',{}\\); print\\('Stage:', r.get\\('stage','N/A'\\)\\); print\\('SHA:', d.get\\('sha','N/A'\\)\\); err=r.get\\('errorMessage'\\); print\\('Error:', err[:200] if err else 'None'\\)\")"
+    ]
+  }
+}

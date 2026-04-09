@@ -167,13 +167,20 @@ class RouterEnvironment:
         base_url = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
         self._model_name = os.getenv("MODEL_NAME", "meta-llama/Meta-Llama-3-8B-Instruct")
         
-        print(f"[DEBUG] Initializing OpenAI client to {base_url}")
-        try:
-            self._client = OpenAI(api_key=api_key, base_url=base_url, timeout=10.0)
-            print("[DEBUG] OpenAI client initialized successfully")
-        except Exception as e:
-            print(f"[ERROR] Failed to initialize OpenAI client: {e}")
-            raise
+        self._mock_mode = False
+        if not api_key or "your_token" in api_key:
+            print("[WARN] No valid API key found. Enabling Rule-Based Fallback Grader (Mock Mode).")
+            self._mock_mode = True
+            self._client = None
+        else:
+            print(f"[DEBUG] Initializing OpenAI client to {base_url}")
+            try:
+                self._client = OpenAI(api_key=api_key, base_url=base_url, timeout=10.0)
+                print("[DEBUG] OpenAI client initialized successfully")
+            except Exception as e:
+                print(f"[WARN] Failed to initialize OpenAI client: {e}. Falling back to Mock Mode.")
+                self._mock_mode = True
+                self._client = None
 
     def reset(self, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None) -> Tuple[RouterObservation, Dict[str, Any]]:
         self._seed = seed if seed is not None else random.randint(0, 1000000)
@@ -244,6 +251,24 @@ class RouterEnvironment:
         return obs, round(reward, 4), terminated, False, info
 
     def _evaluate_with_agent(self, description: str, model: ModelSpec) -> Tuple[float, str]:
+        """Invoke the LLM Judge Agent, or fallback to heuristics if unavailable."""
+        if self._mock_mode:
+            # Simple heuristic based on known task types
+            # Find which task id this belongs to by description
+            task_comp = 0.5
+            for tid, tdef in TASK_CATALOGUE.items():
+                if tdef.description == description:
+                    task_comp = tdef.complexity
+                    break
+            
+            # Simulated outcome: High chance of success if power >= complexity
+            if model.power >= task_comp:
+                return 1.0, f"Heuristic: {model.name} power ({model.power}) satisfies complexity ({task_comp})."
+            elif model.power >= task_comp - 0.2:
+                return 0.7, f"Heuristic: {model.name} power ({model.power}) is close to complexity ({task_comp})."
+            else:
+                return 0.1, f"Heuristic: {model.name} power ({model.power}) is too weak for complexity ({task_comp})."
+
         user_prompt = f"TASK: {description}\nMODEL: {model.name}\nPOWER: {model.power}\nScore this choice."
         
         response = self._client.chat.completions.create(

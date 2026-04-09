@@ -19,12 +19,14 @@ from router_env.models import RouterAction
 load_dotenv()
 
 API_KEY = os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN")
+MOCK_AGENT_MODE = False
 
 if not API_KEY or "your_token" in API_KEY:
-    print("[ERROR] Please set either OPENAI_API_KEY or HF_TOKEN in your .env file.")
-    sys.exit(1)
+    print("[WARN] No valid API key found. Enabling Heuristic Agent (Mock Mode).")
+    MOCK_AGENT_MODE = True
+else:
+    os.environ["OPENAI_API_KEY"] = API_KEY
 
-os.environ["OPENAI_API_KEY"] = API_KEY
 os.environ.setdefault("API_BASE_URL", "https://router.huggingface.co/v1")
 os.environ.setdefault("MODEL_NAME", "meta-llama/Meta-Llama-3-8B-Instruct")
 
@@ -52,6 +54,16 @@ VALID_MODELS   = ["small-fast", "medium-balanced", "large-reasoning"]
 # ── Routing decision ───────────────────────────────────────────────────────────
 def get_routing_decision(task_description: str, budget_remaining: float, last_score: float) -> Dict[str, Any]:
     """Query the LLM to make a routing decision."""
+    if MOCK_AGENT_MODE:
+        desc = task_description.lower()
+        # Rule-based routing
+        if any(w in desc for w in ["audit", "legal", "msa", "pii", "contract", "fintech"]):
+            return {"selected_model": "large-reasoning"}
+        elif any(w in desc for w in ["refactor", "unit test", "sql", "summary", "response"]):
+            return {"selected_model": "medium-balanced"}
+        else:
+            return {"selected_model": "small-fast"}
+
     user_prompt = (
         f"TASK_DESCRIPTION: {task_description}\n"
         f"BUDGET_REMAINING: ${budget_remaining:.2f}\n"
@@ -162,3 +174,4 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"[FATAL] Unhandled exception: {e}")
         sys.exit(1)
+ 
