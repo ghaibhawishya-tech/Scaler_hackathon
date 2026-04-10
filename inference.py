@@ -18,7 +18,7 @@ from router_env.models import RouterAction
 # ── Configuration ─────────────────────────────────────────────────────────────
 load_dotenv()
 
-API_KEY = os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN")
+API_KEY = os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN") or "your_huggingface_token_here"
 MOCK_AGENT_MODE = False
 
 if not API_KEY or "your_token" in API_KEY:

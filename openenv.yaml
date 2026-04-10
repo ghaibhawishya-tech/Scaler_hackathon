@@ -27,34 +27,49 @@ agent_capability: "Cost-Benefit Reasoning"
 tasks:
   - id: sentiment
     description: "Multi-review sentiment classification."
+    grader: "router_env.graders:grade"
   - id: spam_filter
     description: "Proactive spam and phishing detection."
+    grader: "router_env.graders:grade"
   - id: regex_extract
     description: "Log analysis and date extraction."
+    grader: "router_env.graders:grade"
   - id: markdown_gen
     description: "JSON-to-Markdown documentation workflow."
+    grader: "router_env.graders:grade"
   - id: data_clean
     description: "User data normalization and cleaning."
+    grader: "router_env.graders:grade"
   - id: refactor_mono
     description: "Complex code modularization and refactoring."
+    grader: "router_env.graders:grade"
   - id: sql_logic
     description: "Logical auditing for SQL queries."
+    grader: "router_env.graders:grade"
   - id: unit_test_gen
     description: "Comprehensive software test generation."
+    grader: "router_env.graders:grade"
   - id: tech_summary
     description: "Technical document distillation for business users."
+    grader: "router_env.graders:grade"
   - id: support_reply
     description: "Empathetic customer service orchestration."
+    grader: "router_env.graders:grade"
   - id: security_audit
     description: "Advanced OWASP API security auditing."
+    grader: "router_env.graders:grade"
   - id: legal_contract
     description: "Legal-grade EN-ZH translation workflow."
+    grader: "router_env.graders:grade"
   - id: arch_review
     description: "Infrastructure risk and SPOF assessment."
+    grader: "router_env.graders:grade"
   - id: api_design
     description: "Fintech system design and contract drafting."
+    grader: "router_env.graders:grade"
   - id: pii_obfuscate
     description: "Medical-grade data privacy redaction."
+    grader: "router_env.graders:grade"
 
 # ── Reward Design ───────────────────────────────────────────────────────────
 reward:
