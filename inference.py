@@ -14,12 +14,16 @@ from typing import Dict, Any
 from dotenv import load_dotenv
 from router_env.environment import RouterEnvironment
 from router_env.models import RouterAction
+from router_env.graders import grade_episode
+from router_env.environment import TASK_CATALOGUE
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 load_dotenv()
 
 API_KEY = os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN") or "your_huggingface_token_here"
 MOCK_AGENT_MODE = False
+
+BENCHMARK = "RouterEnv-v1"
 
 if not API_KEY or "your_token" in API_KEY:
     print("[WARN] No valid API key found. Enabling Heuristic Agent (Mock Mode).")
@@ -109,29 +113,27 @@ def get_routing_decision(task_description: str, budget_remaining: float, last_sc
 
 
 # ── Main agent loop ────────────────────────────────────────────────────────────
-def run_agent() -> int:
-    """Run the agent. Returns 0 on success, 1 on fatal error."""
-    try:
-        env = RouterEnvironment(budget=10.0, sequence_length=5)
-    except Exception as e:
-        print(f"[ERROR] Failed to initialize RouterEnvironment: {e}")
-        return 1
+def run_task(task_id: str):
+    """Run a full episode for one task and print in OpenEnv format."""
+    env = RouterEnvironment(budget=10.0, sequence_length=5)
+    all_rewards = []
+    step_count = 0
+    score = 0.0
+    success = False
+
+    print(f"[START] task={task_id} env={BENCHMARK} model={os.getenv('MODEL_NAME', 'MetaLlama3-8B')}", flush=True)
 
     try:
         obs, info = env.reset()
-    except Exception as e:
-        print(f"[ERROR] env.reset() failed: {e}")
-        return 1
 
-    print("[START] task=router-graders env=RouterEnv-v1 v=2.1 agent=MetaLlama3-8B")
+        task = TASK_CATALOGUE.get(task_id)
+        if task:
+            obs = env._get_current_obs(f"Task: {task.description}")
 
-    cumulative_reward = 0.0
-    steps             = 0
-    rewards_list      = []
+        actions_taken = []
 
-    try:
         while True:
-            steps += 1
+            step_count += 1
 
             decision = get_routing_decision(
                 task_description=obs.task_description,
@@ -139,36 +141,61 @@ def run_agent() -> int:
                 last_score=obs.last_performance_score
             )
             action = RouterAction(selected_model=decision["selected_model"])
+            actions_taken.append(f"{obs.task_id}:{action.selected_model}")
 
             try:
                 obs, reward, terminated, truncated, info = env.step(action)
             except Exception as e:
-                print(f"[ERROR] env.step() failed at step {steps}: {e}")
+                all_rewards.append(0.0)
+                error_msg = str(e).replace("\n", " ")
+                print(
+                    f"[STEP] step={step_count} action=error "
+                    f"reward=0.00 done=false error={error_msg}",
+                    flush=True,
+                )
                 break
 
-            cumulative_reward += reward
-            rewards_list.append(reward)
+            all_rewards.append(reward)
 
             score = info.get('score', 0.0)
             clamped_score = max(0.01, min(0.99, score))
 
-            done_bool = "true" if terminated else "false"
-            print(f"[STEP] step={steps} model={action.selected_model} "
-                  f"task={info.get('task_id','N/A')} score={clamped_score:.2f} "
-                  f"reward={reward:.3f} done={done_bool}")
-            print(f"       Reasoning: {info.get('reasoning','N/A')}")
+            done_str = "true" if terminated or truncated else "false"
+            print(
+                f"[STEP] step={step_count} model={action.selected_model} "
+                f"task={info.get('task_id','N/A')} score={clamped_score:.2f} "
+                f"reward={reward:.3f} done={done_str}",
+                flush=True,
+            )
 
             if terminated or truncated:
                 break
 
-    except Exception as e:
-        print(f"[ERROR] Unexpected error in agent loop at step {steps}: {e}")
-        return 1
+        grade = grade_episode(task_id, {
+            "actions_taken": actions_taken,
+            "final_soc": 0.0,
+        })
 
-    score_avg   = cumulative_reward / steps if steps > 0 else 0.0
-    rewards_str = ",".join([f"{r:.2f}" for r in rewards_list])
-    print(f"[END] avg_score={score_avg:.3f} steps={steps} rewards={rewards_str}")
+        score = grade["score"]
+        success = grade["passed"]
 
+    finally:
+        rewards_str = ",".join(f"{r:.2f}" for r in all_rewards)
+        print(
+            f"[END] success={str(success).lower()} steps={step_count} "
+            f"score={score:.2f} rewards={rewards_str}",
+            flush=True,
+        )
+
+
+def run_agent() -> int:
+    """Run the agent across all tasks. Returns 0 on success, 1 on fatal error."""
+    for task_id in TASK_CATALOGUE.keys():
+        try:
+            run_task(task_id)
+        except Exception as e:
+            print(f"[ERROR] Failed to run task {task_id}: {e}")
+            continue
     return 0
 
 
