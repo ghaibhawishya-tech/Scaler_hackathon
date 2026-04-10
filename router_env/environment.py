@@ -98,7 +98,7 @@ class RouterEnvironment:
             task_queue=task_queue
         )
         self._done = False
-        self._last_perf = 0.0
+        self._last_perf = 0.5  # Start with a valid score (strictly between 0 and 1)
         return self._get_current_obs(), {}
 
     def step(self, action: RouterAction) -> Tuple[RouterObservation, float, bool, bool, Dict[str, Any]]:
@@ -121,8 +121,14 @@ class RouterEnvironment:
             except:
                 score, reasoning = 0.01, "Grader failed"
 
-        # 2. Strict (0.01, 0.99) Constraint Enforcement
-        score = max(0.01, min(0.99, score))
+        # 2. Strict (0, 1) Constraint Enforcement - MUST be strictly between 0 and 1
+        # Reject 0.0 and 1.0 by using small epsilon margins
+        if score >= 1.0:
+            score = 0.99
+        elif score <= 0.0:
+            score = 0.01
+        else:
+            score = max(0.01, min(0.99, score))
         
         # 3. Normalized Reward Calculation (0.01, 0.99)
         cost_efficiency = 1.0 - (model.cost / 0.81)
@@ -132,7 +138,10 @@ class RouterEnvironment:
         self._state.current_task_index += 1
         terminated = (self._state.current_task_index >= len(self._state.task_queue))
         self._done = terminated
-        
+
+        # Update last_perf for next observation
+        self._last_perf = score
+
         obs = self._get_current_obs(f"Grader Verdict: {reasoning}")
         info = {
             "score": round(score, 2),             # Standard requirement
@@ -158,8 +167,8 @@ class RouterEnvironment:
         idx = self._state.current_task_index
         if self._state is None or idx >= len(self._state.task_queue):
             return RouterObservation(
-                task_description="EMPTY", estimated_tokens=0, budget_remaining=0.0, 
-                tasks_left=0, last_performance_score=0.0, message="Done."
+                task_description="EMPTY", estimated_tokens=0, budget_remaining=0.0,
+                tasks_left=0, last_performance_score=0.5, message="Done."
             )
         task_id = self._state.task_queue[idx]
         task = TASK_CATALOGUE[task_id]

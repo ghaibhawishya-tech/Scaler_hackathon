@@ -19,7 +19,7 @@ class RouterObservation(BaseModel):
     estimated_tokens: int = Field(..., description="Estimated token size of the payload.")
     budget_remaining: float = Field(..., description="Remaining episode budget in US dollars.")
     tasks_left: int = Field(..., description="Number of tasks remaining in the queue.")
-    last_performance_score: float = Field(default=0.0, description="Score (0.0-1.0) given by the Agent Grader for the previous choice.")
+    last_performance_score: float = Field(default=0.5, description="Score (strictly between 0 and 1) given by the Agent Grader for the previous choice.")
     last_success: bool = Field(default=False, description="Whether the previous task was considered a success.")
     task_id: str = Field(default="", description="Short identifier for the current task.")
     message: str = Field(default="", description="Environment feedback message.")
