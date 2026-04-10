@@ -20,7 +20,10 @@
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); r=d.get\\('runtime',{}\\); print\\('Status:', r.get\\('stage','N/A'\\)\\); print\\('SHA:', d.get\\('sha','N/A'\\)\\); print\\('Error:', r.get\\('errorMessage','N/A'\\)[:200] if r.get\\('errorMessage'\\) else 'None'\\)\")",
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); r=d.get\\('runtime',{}\\); print\\('Stage:', r.get\\('stage','N/A'\\)\\); print\\('SHA:', d.get\\('sha','N/A'\\)\\); err=r.get\\('errorMessage'\\); print\\('Error:', err[:300] if err else 'None'\\)\")",
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('HF SHA:', d.get\\('sha','N/A'\\)\\); print\\('Stage:', d.get\\('runtime',{}\\).get\\('stage','N/A'\\)\\)\")",
-      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); r=d.get\\('runtime',{}\\); print\\('Stage:', r.get\\('stage','N/A'\\)\\); print\\('SHA:', d.get\\('sha','N/A'\\)\\); err=r.get\\('errorMessage'\\); print\\('Error:', err[:200] if err else 'None'\\)\")"
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); r=d.get\\('runtime',{}\\); print\\('Stage:', r.get\\('stage','N/A'\\)\\); print\\('SHA:', d.get\\('sha','N/A'\\)\\); err=r.get\\('errorMessage'\\); print\\('Error:', err[:200] if err else 'None'\\)\")",
+      "Bash(python -c ':*)",
+      "Bash(python -m py_compile router_env/environment.py)",
+      "Bash(python -m py_compile router_env/models.py)"
     ]
   }
 }

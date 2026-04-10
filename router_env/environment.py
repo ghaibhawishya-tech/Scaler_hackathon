@@ -123,25 +123,15 @@ class RouterEnvironment:
                 logger.warning(f"Grader call failed: {e}, using fallback")
                 score, reasoning = 0.50, "Grader unavailable - using neutral score"
 
-        # 2. Strict (0, 1) Constraint Enforcement - scores MUST be strictly between 0 and 1
-        # Use tighter bounds (0.02, 0.98) to ensure no edge values pass through
-        if score >= 0.98:
-            score = 0.97
-        elif score <= 0.02:
-            score = 0.03
-        else:
-            score = max(0.02, min(0.98, score))
+        # 2. Strict (0.01, 0.99) Constraint Enforcement
+        score = max(0.01, min(0.99, score))
 
         # 3. Normalized Reward Calculation
         cost_efficiency = 1.0 - (model.cost / 0.81)
         reward = (0.7 * score) + (0.3 * cost_efficiency)
-        # Also clamp reward to strictly (0, 1)
-        if reward >= 0.98:
-            reward = 0.97
-        elif reward <= 0.02:
-            reward = 0.03
-        else:
-            reward = max(0.02, min(0.98, reward)) 
+        
+        # Reward clamping to strictly (0.01, 0.99)
+        reward = max(0.01, min(0.99, reward))
 
         self._state.current_task_index += 1
         terminated = (self._state.current_task_index >= len(self._state.task_queue))

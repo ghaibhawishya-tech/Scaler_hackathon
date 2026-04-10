@@ -54,6 +54,9 @@ VALID_MODELS   = ["small-fast", "medium-balanced", "large-reasoning"]
 # ── Routing decision ───────────────────────────────────────────────────────────
 def get_routing_decision(task_description: str, budget_remaining: float, last_score: float) -> Dict[str, Any]:
     """Query the LLM to make a routing decision."""
+    # Clamp score between 0.01 and 0.99
+    last_score = max(0.01, min(0.99, last_score))
+
     if MOCK_AGENT_MODE:
         desc = task_description.lower()
         # Rule-based routing
@@ -146,9 +149,12 @@ def run_agent() -> int:
             cumulative_reward += reward
             rewards_list.append(reward)
 
+            score = info.get('score', 0.0)
+            clamped_score = max(0.01, min(0.99, score))
+
             done_bool = "true" if terminated else "false"
             print(f"[STEP] step={steps} model={action.selected_model} "
-                  f"task={info.get('task_id','N/A')} score={info.get('score',0.0):.2f} "
+                  f"task={info.get('task_id','N/A')} score={clamped_score:.2f} "
                   f"reward={reward:.3f} done={done_bool}")
             print(f"       Reasoning: {info.get('reasoning','N/A')}")
 
