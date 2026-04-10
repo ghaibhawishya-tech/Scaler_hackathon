@@ -32,10 +32,10 @@ JUDGE_SYSTEM_PROMPT = """
 You are a 'RouterEnv' Judge. Evaluate if the selected model can solve the task.
 You must return only JSON.
 
-SCORING RUBRIC (0.01 to 0.99) - STRICTLY EXCLUDE 0.0 AND 1.0:
-0.99: Perfect choice. Frontier capability for hard tasks, or efficient for easy tasks.
-0.65: Capable but risky or overkill.
-0.01: Complete mismatch or total failure.
+SCORING RUBRIC - Score MUST be strictly between 0.0 and 1.0 (never 0.0 or 1.0):
+0.95: Perfect choice. Frontier capability for hard tasks, or efficient for easy tasks.
+0.50: Capable but risky or overkill.
+0.05: Complete mismatch or total failure.
 
 JSON SCHEMA:
 {"performance_score": float, "reasoning": "string"}
@@ -98,7 +98,7 @@ class RouterEnvironment:
             task_queue=task_queue
         )
         self._done = False
-        self._last_perf = 0.5  # Start with a valid score (strictly between 0 and 1)
+        self._last_perf = 0.50  # Valid score strictly between 0 and 1
         return self._get_current_obs(), {}
 
     def step(self, action: RouterAction) -> Tuple[RouterObservation, float, bool, bool, Dict[str, Any]]:
@@ -111,29 +111,37 @@ class RouterEnvironment:
 
         # 1. Evaluate
         if self._mock_mode:
-            if model.power >= task.complexity: score = 0.99
-            elif model.power >= task.complexity - 0.2: score = 0.65
-            else: score = 0.01
+            # Mock mode: heuristic fallback - but use range (0.05, 0.95) to avoid edge rejection
+            if model.power >= task.complexity: score = 0.95
+            elif model.power >= task.complexity - 0.2: score = 0.50
+            else: score = 0.05
             reasoning = f"Heuristic Score for {task_id}"
         else:
             try:
                 score, reasoning = self._evaluate_with_agent(task.description, model)
-            except:
-                score, reasoning = 0.01, "Grader failed"
+            except Exception as e:
+                logger.warning(f"Grader call failed: {e}, using fallback")
+                score, reasoning = 0.50, "Grader unavailable - using neutral score"
 
-        # 2. Strict (0, 1) Constraint Enforcement - MUST be strictly between 0 and 1
-        # Reject 0.0 and 1.0 by using small epsilon margins
-        if score >= 1.0:
-            score = 0.99
-        elif score <= 0.0:
-            score = 0.01
+        # 2. Strict (0, 1) Constraint Enforcement - scores MUST be strictly between 0 and 1
+        # Use tighter bounds (0.02, 0.98) to ensure no edge values pass through
+        if score >= 0.98:
+            score = 0.97
+        elif score <= 0.02:
+            score = 0.03
         else:
-            score = max(0.01, min(0.99, score))
-        
-        # 3. Normalized Reward Calculation (0.01, 0.99)
+            score = max(0.02, min(0.98, score))
+
+        # 3. Normalized Reward Calculation
         cost_efficiency = 1.0 - (model.cost / 0.81)
         reward = (0.7 * score) + (0.3 * cost_efficiency)
-        reward = max(0.01, min(0.99, reward)) 
+        # Also clamp reward to strictly (0, 1)
+        if reward >= 0.98:
+            reward = 0.97
+        elif reward <= 0.02:
+            reward = 0.03
+        else:
+            reward = max(0.02, min(0.98, reward)) 
 
         self._state.current_task_index += 1
         terminated = (self._state.current_task_index >= len(self._state.task_queue))
@@ -161,14 +169,14 @@ class RouterEnvironment:
             temperature=0.0
         )
         data = json.loads(response.choices[0].message.content)
-        return float(data.get("performance_score", 0.01)), str(data.get("reasoning", ""))
+        return float(data.get("performance_score", 0.50)), str(data.get("reasoning", ""))
 
     def _get_current_obs(self, message: str = "") -> RouterObservation:
         idx = self._state.current_task_index
         if self._state is None or idx >= len(self._state.task_queue):
             return RouterObservation(
                 task_description="EMPTY", estimated_tokens=0, budget_remaining=0.0,
-                tasks_left=0, last_performance_score=0.5, message="Done."
+                tasks_left=0, last_performance_score=0.50, message="Done."
             )
         task_id = self._state.task_queue[idx]
         task = TASK_CATALOGUE[task_id]
